@@ -12,9 +12,56 @@
         "application/json"
     ],
     "paths": {
+        "/topic/game/player/join": {
+            "post": {
+                "summary": "Add a player to the game",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/board/added is triggered with player and position information</li></ul>",
+                "parameters": [
+                    {
+                        "name": "player",
+                        "in": "body",
+                        "description": "Information required to identify a player (name and avatar)",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PlayerInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "/topic/game/board/added": {
+                        "description": "When the player has joined the game",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerMoved"
+                        }
+                    },
+                    "/queue/errors": {
+                        "description": "If the game is full (too many players) or if the player has joined the game",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/player/quit": {
+            "post": {
+                "summary": "Remove the current player from the game",
+                "description": "Remove the current player from the game. Once the player is removed, the event /topic/game/board/removed. If the player wasn't really in the game, then no event will be triggered",
+                "parameters": [],
+                "responses": {
+                    "/topic/game/board/removed": {
+                        "description": "When the player was on the board and has sucessfully leaved",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerMoved"
+                        }
+                    }
+                }
+            }
+        },
         "/topic/game/player/died": {
             "get": {
-                "summary": "Notify the death of a player. Fired when a player life is equal to or under 0",
+                "summary": "Notify the death of a player",
+                "description": "Fired when a player life is equal to or under 0",
                 "responses": {
                     "default": {
                         "description": "The player who died",
@@ -27,7 +74,8 @@
         },
         "/topic/game/player/revived": {
             "get": {
-                "summary": "Notify the revive of a player. Fired when a player comes back to life",
+                "summary": "Notify the revive of a player",
+                "description": "Fired when a player comes back to life",
                 "responses": {
                     "default": {
                         "description": "The player that comes back to life",
@@ -41,6 +89,7 @@
         "/topic/game/player/hit": {
             "get": {
                 "summary": "Notify when a player is attacked",
+                "description": "Notify when a player is attacked",
                 "responses": {
                     "default": {
                         "description": "The player and damage value",
@@ -54,6 +103,7 @@
         "/topic/game/player/healed": {
             "get": {
                 "summary": "Notify when a player is healed",
+                "description": "Notify when a player is healed",
                 "responses": {
                     "default": {
                         "description": "The player and heal amount",
@@ -67,6 +117,7 @@
         "/topic/game/player/states": {
             "get": {
                 "summary": "Notify when any state applied to the player has been added or remove",
+                "description": "Notify when any state applied to the player has been added or remove",
                 "responses": {
                     "default": {
                         "description": "The player and the state changes",
@@ -80,6 +131,7 @@
         "/topic/game/player/max": {
             "get": {
                 "summary": "Notify the player his max life is updated",
+                "description": "Notify the player his max life is updated",
                 "responses": {
                     "default": {
                         "description": "The player and the amount",
@@ -92,23 +144,14 @@
         },
         "/topic/game/player/move/up": {
             "post": {
-                "summary": "Moves the current player one cell up. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
-                "parameters": [
-                    {
-                        "name": "",
-                        "in": "body",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "Move the current player one cell up",
+                "description": "Moves the current player one cell up. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
+                "parameters": [],
                 "responses": {
-                    "default": {
-                        "description": "",
+                    "/topic/game/board/moved": {
+                        "description": "When the player has moved",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/PlayerMoved"
                         }
                     }
                 }
@@ -116,23 +159,14 @@
         },
         "/topic/game/player/move/down": {
             "post": {
-                "summary": "Moves the current player one cell down. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
-                "parameters": [
-                    {
-                        "name": "",
-                        "in": "body",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "Move the current player one cell down",
+                "description": "Moves the current player one cell down. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
+                "parameters": [],
                 "responses": {
-                    "default": {
-                        "description": "",
+                    "/topic/game/board/moved": {
+                        "description": "When the player has moved",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/PlayerMoved"
                         }
                     }
                 }
@@ -140,23 +174,14 @@
         },
         "/topic/game/player/move/left": {
             "post": {
-                "summary": "Moves the current player one cell left. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
-                "parameters": [
-                    {
-                        "name": "",
-                        "in": "body",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "Move the current player one cell left",
+                "description": "Moves the current player one cell left. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
+                "parameters": [],
                 "responses": {
-                    "default": {
-                        "description": "",
+                    "/topic/game/board/moved": {
+                        "description": "When the player has moved",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/PlayerMoved"
                         }
                     }
                 }
@@ -164,23 +189,14 @@
         },
         "/topic/game/player/move/right": {
             "post": {
-                "summary": "Moves the current player one cell right. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
-                "parameters": [
-                    {
-                        "name": "",
-                        "in": "body",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "Move the current player one cell right",
+                "description": "Moves the current player one cell right. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
+                "parameters": [],
                 "responses": {
-                    "default": {
-                        "description": "",
+                    "/topic/game/board/moved": {
+                        "description": "When the player has moved",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/PlayerMoved"
                         }
                     }
                 }
@@ -188,23 +204,96 @@
         },
         "/topic/game/action": {
             "post": {
-                "summary": "Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife. If the action is ChangePosition, then the event /topic/game/board/moved is triggered with player and position information. If the action is ChangeStates, then the event /topic/game/player/states is triggered with player and the list of changes. If the action is MoveImage, then the event /topic/game/action/image/moved indicating the image that moved and the position before and after. If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: /topic/game/player/died, /topic/game/player/revived, /topic/game/player/hit, /topic/game/player/healed.",
+                "summary": "execute an action",
+                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/board/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/action/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/player/died</li><li>/topic/game/player/revived</li><li>/topic/game/player/hit</li><li>/topic/game/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
-                        "name": "action",
+                        "name": "change position",
                         "in": "body",
-                        "description": "Action",
+                        "description": "Change position of all players that are currently on the provided cell to another cell",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Action"
+                            "$ref": "#/definitions/ChangePosition"
+                        }
+                    },
+                    {
+                        "name": "change states",
+                        "in": "body",
+                        "description": "Change states of all players that are currently on the target cell",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChangeStates"
+                        }
+                    },
+                    {
+                        "name": "move image",
+                        "in": "body",
+                        "description": "Move an image on the board",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveImage"
+                        }
+                    },
+                    {
+                        "name": "update life",
+                        "in": "body",
+                        "description": "Update the current life of all players that are currently on the target cell",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UpdateCurrentLife"
+                        }
+                    },
+                    {
+                        "name": "update max life",
+                        "in": "body",
+                        "description": "Update the maximum life of all players that are currently on the target cell",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UpdateMaxLife"
                         }
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": "",
+                    "/topic/game/board/moved": {
+                        "description": "When the ChangePosition action has moved at least one player",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/PlayerMoved"
+                        }
+                    },
+                    "/topic/game/player/states": {
+                        "description": "When the ChangeStates action has updated at least one state on one player",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerStateUpdate"
+                        }
+                    },
+                    "/topic/game/action/image/moved": {
+                        "description": "When the MoveImage action has moved an image on the board",
+                        "schema": {
+                            "$ref": "#/definitions/MoveImage"
+                        }
+                    },
+                    "/topic/game/player/died": {
+                        "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and his life is now under 0",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerLifeUpdate"
+                        }
+                    },
+                    "/topic/game/player/revived": {
+                        "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and his life was 0 and now its life is over 0",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerLifeUpdate"
+                        }
+                    },
+                    "/topic/game/player/hit": {
+                        "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and amount was negative",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerLifeUpdate"
+                        }
+                    },
+                    "/topic/game/player/healed": {
+                        "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and amount was positive",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     }
                 }
@@ -213,6 +302,7 @@
         "/topic/game/action/image/moved": {
             "get": {
                 "summary": "Notify when an image has moved",
+                "description": "Notify when an image has moved",
                 "responses": {
                     "default": {
                         "description": "The executed action. It contains the information about the image that has moved and where the image was before the move (start) and where the image is now (end)",
@@ -226,6 +316,7 @@
         "/topic/game/board/moved": {
             "get": {
                 "summary": "Notify when a player has moved",
+                "description": "Notify when a player has moved",
                 "responses": {
                     "default": {
                         "description": "The player that moved, the position before the move (oldCell) and the current position (newCell)",
@@ -239,6 +330,7 @@
         "/topic/game/board/added": {
             "get": {
                 "summary": "Notify when a player is added to the board",
+                "description": "Notify when a player is added to the board",
                 "responses": {
                     "default": {
                         "description": "The player that has joined the game and the position where he has been added (newCell)",
@@ -264,7 +356,8 @@
         },
         "/topic/game/message/error": {
             "get": {
-                "summary": "Notify when an error occurs in the game. The error can contain developer information that is useful for identifying quickly who created the problem and therefore helps to locate the error",
+                "summary": "Broadcast notification when an error occurs in the game",
+                "description": "Notify when an error occurs in the game. The error can contain developer information that is useful for identifying quickly who created the problem and therefore helps to locate the error",
                 "responses": {
                     "default": {
                         "description": "The error (message, cause and eventually the developer)",
@@ -283,54 +376,6 @@
                         "description": "The message and the level",
                         "schema": {
                             "$ref": "#/definitions/Message"
-                        }
-                    }
-                }
-            }
-        },
-        "/topic/game/player/join": {
-            "post": {
-                "summary": "Add a player to the game. If the player is already in the game, then an error is triggered on /queue/errors. If the game is full (too many players), then an error is also triggered on /queue/errors",
-                "parameters": [
-                    {
-                        "name": "player",
-                        "in": "body",
-                        "description": "Information required to identify a player (name and avatar)",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/PlayerInfo"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/topic/game/player/quit": {
-            "post": {
-                "summary": "Remove the current player from the game. Once the player is removed, the event /topic/game/board/removed. If the player wasn't really in the game, then no event will be triggered",
-                "parameters": [
-                    {
-                        "name": "",
-                        "in": "body",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "",
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 }
@@ -377,7 +422,12 @@
             "type": "object"
         },
         "Player": {
+            "description": "The general information about one player. A player is either a real player (Wizard) or an enemy controlled by the server (Enemy)",
             "properties": {
+                "@c": {
+                    "type": "string",
+                    "description": "The type of the player: either a Wizard or an Enemy"
+                },
                 "id": {
                     "type": "string",
                     "description": "Unique identifier representing a specific player"
@@ -474,11 +524,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Image name to move"
-                },
-                "player": {
-                    "$ref": "#/definitions/Player",
-                    "description": "The action emitter"
+                    "description": "Image name to move. The name of the image represents the name of the local file to move."
                 },
                 "start": {
                     "$ref": "#/definitions/Cell",
@@ -493,18 +539,78 @@
             "description": "An image moving action"
         },
         "Action": {
-            "description": "any of ChangePosition, MoveImage, UpdateLife, ChangeStates",
+            "description": "any of ChangePosition, MoveImage, UpdateCurrentLife, UpdateMaxLife, ChangeStates",
             "type": "object",
             "properties": {
-                
+                "@c": {
+                    "type": "string",
+                    "description": "The type of the action: either '.ChangePosition', '.MoveImage', '.UpdateCurrentLife', '.UpdateMaxLife', '.ChangeStates'"
+                }
             }
+        },
+        "ChangePosition": {
+            "properties": {
+                "start": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The starting Cell"
+                },
+                "end": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The destination Cell"
+                }
+            },
+            "type": "object",
+            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+        },
+        "ChangeStates": {
+            "properties": {
+                "cell": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The cell to target"
+                },
+                "stateChanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StateChange"
+                    },
+                    "description": "A list of changes to apply. Each change provide the name of the state and the action to apply on the provided state (add or remove)"
+                }
+            },
+            "type": "object",
+            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+        },
+        "UpdateCurrentlife": {
+            "properties": {
+                "cell": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The cell to target: the location of the game board cell where increment value should be applied"
+                },
+                "increment": {
+                    "type": "integer",
+                    "description": "The increment value to apply on the location. If increment is positive, then current life will be incremented. If increment is negative, then current life will be decremented."
+                }
+            },
+            "type": "object",
+            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+        },
+        "UpdateMaxlife": {
+            "properties": {
+                "cell": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The cell to target: the location of the game board cell where increment value should be applied"
+                },
+                "increment": {
+                    "type": "integer",
+                    "description": "The increment value to apply on the location. If increment is positive, then maximum life will be incremented. If increment is negative, then maximum life will be decremented."
+                }
+            },
+            "type": "object",
+            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
         },
         "Level": {
             "description": "one of DEBUG, INFO, WARNING",
             "type": "string",
-            "properties": {
-                
-            },
+            "properties": {},
             "enum": [
                 "DEBUG",
                 "INFO",
@@ -522,13 +628,30 @@
             },
             "type": "object"
         },
+        "Developer": {
+            "properties": {
+                "nickname": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "Error": {
             "properties": {
                 "message": {
                     "type": "string"
                 },
-                "level": {
-                    "$ref": "#/definitions/Level"
+                "cause": {
+                    "type": "string"
+                },
+                "developer": {
+                    "$ref": "#/definitions/Developer"
                 }
             },
             "type": "object"

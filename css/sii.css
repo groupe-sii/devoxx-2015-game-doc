@@ -1,0 +1,16 @@
+.endpoint .operations .content > ul,
+.endpoint .operations .content > ul > li > ul,
+.endpoint .operations .content > ul > li > ul > li > ul {
+	list-style: disc outside;
+	margin-left: 20px;
+}
+
+.submit,
+.response-content-type,
+.parameter-content-type,
+/*.sandbox > h4 > table > thead > tr > th:nth-of-type(2),
+.operation-params td:nth-of-type(2),*/
+.operation-params td textarea,
+.operation-params td input {
+	display: none !important;
+}
