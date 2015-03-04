@@ -204,7 +204,7 @@
         },
         "/topic/game/action": {
             "post": {
-                "summary": "execute an action",
+                "summary": "execute an action (change position, update life, change states, move image)",
                 "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/board/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/action/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/player/died</li><li>/topic/game/player/revived</li><li>/topic/game/player/hit</li><li>/topic/game/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
@@ -344,6 +344,7 @@
         "/topic/game/board/removed": {
             "get": {
                 "summary": "Notify when a player is removed from board",
+                "description": "Notify when a player is removed from board",
                 "responses": {
                     "default": {
                         "description": "The player that has quitted the game and the position where he was (oldCell)",
@@ -371,11 +372,26 @@
         "/topic/game/message": {
             "get": {
                 "summary": "Notify when a message should be displayed on the client",
+                "description": "Notify when a message should be displayed on the client",
                 "responses": {
                     "default": {
                         "description": "The message and the level",
                         "schema": {
                             "$ref": "#/definitions/Message"
+                        }
+                    }
+                }
+            }
+        },
+        "/queue/errors": {
+            "get": {
+                "summary": "Notify when an error occurs due to the previous request you have done",
+                "dsecription": "Notify when an error occurs due to the previous request you have done",
+                "responses": {
+                    "default": {
+                        "description": "The error (message, cause and eventually the developer)",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
                         }
                     }
                 }
@@ -522,6 +538,10 @@
         },
         "MoveImage": {
             "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .MoveImage"
+            	},
                 "name": {
                     "type": "string",
                     "description": "Image name to move. The name of the image represents the name of the local file to move."
@@ -550,6 +570,10 @@
         },
         "ChangePosition": {
             "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .ChangePosition"
+            	},
                 "start": {
                     "$ref": "#/definitions/Cell",
                     "description": "The starting Cell"
@@ -564,6 +588,10 @@
         },
         "ChangeStates": {
             "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .ChangeStates"
+            	},
                 "cell": {
                     "$ref": "#/definitions/Cell",
                     "description": "The cell to target"
@@ -577,10 +605,14 @@
                 }
             },
             "type": "object",
-            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+            "description": "Change states of all players that are on the targeted cell"
         },
-        "UpdateCurrentlife": {
+        "UpdateCurrentLife": {
             "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .UpdateCurrentLife"
+            	},
                 "cell": {
                     "$ref": "#/definitions/Cell",
                     "description": "The cell to target: the location of the game board cell where increment value should be applied"
@@ -591,10 +623,14 @@
                 }
             },
             "type": "object",
-            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+            "description": "Change life of all players that are on the targeted cell"
         },
-        "UpdateMaxlife": {
+        "UpdateMaxLife": {
             "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .UpdateMaxLife"
+            	},
                 "cell": {
                     "$ref": "#/definitions/Cell",
                     "description": "The cell to target: the location of the game board cell where increment value should be applied"
@@ -605,7 +641,7 @@
                 }
             },
             "type": "object",
-            "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
+            "description": "Change maximum life of all players that are on the targeted cell"
         },
         "Level": {
             "description": "one of DEBUG, INFO, WARNING",

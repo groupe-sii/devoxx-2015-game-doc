@@ -5,11 +5,14 @@
 	margin-left: 20px;
 }
 
+span.http_method a {
+	width: 70px !important;
+}
+
 .submit,
 .response-content-type,
 .parameter-content-type,
-/*.sandbox > h4 > table > thead > tr > th:nth-of-type(2),
-.operation-params td:nth-of-type(2),*/
+.operation-params td:nth-of-type(2),
 .operation-params td textarea,
 .operation-params td input {
 	display: none !important;
