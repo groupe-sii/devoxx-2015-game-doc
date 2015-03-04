@@ -1,0 +1,13 @@
+{
+  "name": "swagger-doc",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "server": "node node_modules/http-server/bin/http-server ./ -p 8888 --cors"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^0.7.5"
+  }
+}
