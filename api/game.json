@@ -15,7 +15,7 @@
         "/topic/game/player/join": {
             "post": {
                 "summary": "Add a player to the game",
-                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/board/added is triggered with player and position information</li></ul>",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/board/added is triggered with player and position information. The /topic/game/joined is triggered with player, game and board information</li></ul>",
                 "parameters": [
                     {
                         "name": "player",
@@ -34,6 +34,12 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
+                    "/topic/game/joined": {
+                        "description": "When the player has joined the game",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
+                        }
+                    },
                     "/queue/errors": {
                         "description": "If the game is full (too many players) or if the player has joined the game",
                         "schema": {
@@ -46,13 +52,19 @@
         "/topic/game/player/quit": {
             "post": {
                 "summary": "Remove the current player from the game",
-                "description": "Remove the current player from the game. Once the player is removed, the event /topic/game/board/removed. If the player wasn't really in the game, then no event will be triggered",
+                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/board/removed and /topic/game/leaved are triggered. If the player wasn't really in the game, then no event will be triggered",
                 "parameters": [],
                 "responses": {
                     "/topic/game/board/removed": {
-                        "description": "When the player was on the board and has sucessfully leaved",
+                        "description": "When the player was on the board and has successfully leaved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
+                        }
+                    },
+                    "/topic/game/leaved": {
+                        "description": "When the player was on the board and has successfully leaved",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
                         }
                     }
                 }
@@ -294,6 +306,34 @@
                         "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and amount was positive",
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/joined": {
+            "get": {
+                "summary": "Notify when a player has joined the game",
+                "description": "Notify when a player has joined the game",
+                "responses": {
+                    "default": {
+                        "description": "The player that has joined the game and the whole game information (all players and board)",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/leaved": {
+            "get": {
+                "summary": "Notify when a player has joined the game",
+                "description": "Notify when a player has joined the game",
+                "responses": {
+                    "default": {
+                        "description": "The player that has joined the game and the whole game information (all players and board)",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
                         }
                     }
                 }
@@ -691,6 +731,51 @@
                 }
             },
             "type": "object"
+        },
+        "Board": {
+            "properties": {
+                "width": {
+                    "type": "integer",
+                    "description": "The width of the board"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "The height of the board"
+                }
+            },
+            "type": "object",
+            "description": "The board information"
+        },
+        "Game": {
+            "properties": {
+                "players": {
+                	"type": "array",
+                	"items": {
+	                    "$ref": "#/definitions/Player",
+	                    "description": "The player"
+	                }
+                },
+                "board": {
+                    "$ref": "#/definitions/Board",
+                    "description": "The board information"
+                }
+            },
+            "type": "object",
+            "description": "The game information (board and players)"
+        },
+        "PlayerAndGame": {
+            "properties": {
+                "player": {
+                    "$ref": "#/definitions/Player",
+                    "description": "The player"
+                },
+                "game": {
+                    "$ref": "#/definitions/Game",
+                    "description": "The game information"
+                }
+            },
+            "type": "object",
+            "description": "The player and the game information"
         }
     }
 }
