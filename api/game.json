@@ -12,11 +12,33 @@
         "application/json"
     ],
     "paths": {
-        "/topic/game/player/join": {
+        "/topic/game/create": {
+            "post": {
+                "summary": "Create a new game",
+                "description": "Create a new game",
+                "parameters": [],
+                "responses": {
+                    "/topic/game/created": {
+                        "description": "When the game has been successfully created",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/{gameId}/join": {
             "post": {
                 "summary": "Add a player to the game",
-                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/board/added is triggered with player and position information. The /topic/game/joined is triggered with player, game and board information</li></ul>",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/joined is triggered with player, game and board information</li></ul>",
                 "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game the player wants to join to",
+                        "required": true,
+                        "type": "string"
+                    },
                     {
                         "name": "player",
                         "in": "body",
@@ -28,13 +50,13 @@
                     }
                 ],
                 "responses": {
-                    "/topic/game/board/added": {
+                    "/topic/game/{gameId}/player/added": {
                         "description": "When the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/joined": {
+                    "/topic/game/{gameId}/joined": {
                         "description": "When the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/PlayerAndGame"
@@ -49,19 +71,27 @@
                 }
             }
         },
-        "/topic/game/player/quit": {
+        "/topic/game/{gameId}/leave": {
             "post": {
                 "summary": "Remove the current player from the game",
-                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/board/removed and /topic/game/leaved are triggered. If the player wasn't really in the game, then no event will be triggered",
-                "parameters": [],
+                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/{gameId}/player/removed and /topic/game/{gameId}/leaved are triggered. If the player wasn't really in the game, then no event will be triggered",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game the player wants to leave",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
-                    "/topic/game/board/removed": {
+                    "/topic/game/{gameId}/player/removed": {
                         "description": "When the player was on the board and has successfully leaved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/leaved": {
+                    "/topic/game/{gameId}/leaved": {
                         "description": "When the player was on the board and has successfully leaved",
                         "schema": {
                             "$ref": "#/definitions/PlayerAndGame"
@@ -70,10 +100,19 @@
                 }
             }
         },
-        "/topic/game/player/died": {
+        "/topic/game/{gameId}/player/died": {
             "get": {
                 "summary": "Notify the death of a player",
                 "description": "Fired when a player life is equal to or under 0",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player who died",
@@ -84,10 +123,19 @@
                 }
             }
         },
-        "/topic/game/player/revived": {
+        "/topic/game/{gameId}/player/revived": {
             "get": {
                 "summary": "Notify the revive of a player",
                 "description": "Fired when a player comes back to life",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that comes back to life",
@@ -98,10 +146,19 @@
                 }
             }
         },
-        "/topic/game/player/hit": {
+        "/topic/game/{gameId}/player/hit": {
             "get": {
                 "summary": "Notify when a player is attacked",
                 "description": "Notify when a player is attacked",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player and damage value",
@@ -112,10 +169,19 @@
                 }
             }
         },
-        "/topic/game/player/healed": {
+        "/topic/game/{gameId}/player/healed": {
             "get": {
                 "summary": "Notify when a player is healed",
                 "description": "Notify when a player is healed",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player and heal amount",
@@ -126,10 +192,19 @@
                 }
             }
         },
-        "/topic/game/player/states": {
+        "/topic/game/{gameId}/player/states": {
             "get": {
                 "summary": "Notify when any state applied to the player has been added or remove",
                 "description": "Notify when any state applied to the player has been added or remove",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player and the state changes",
@@ -140,10 +215,19 @@
                 }
             }
         },
-        "/topic/game/player/max": {
+        "/topic/game/{gameId}/player/max": {
             "get": {
                 "summary": "Notify the player his max life is updated",
                 "description": "Notify the player his max life is updated",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player and the amount",
@@ -160,7 +244,7 @@
                 "description": "Moves the current player one cell up. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/board/moved": {
+                    "/topic/game/{gameId}/player/moved": {
                         "description": "When the player has moved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
@@ -175,7 +259,7 @@
                 "description": "Moves the current player one cell down. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/board/moved": {
+                    "/topic/game/{gameId}/player/moved": {
                         "description": "When the player has moved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
@@ -190,7 +274,7 @@
                 "description": "Moves the current player one cell left. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/board/moved": {
+                    "/topic/game/{gameId}/player/moved": {
                         "description": "When the player has moved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
@@ -205,7 +289,7 @@
                 "description": "Moves the current player one cell right. If the player can't move, then the player position is not changed and no event will be triggered. If the player can move, then the event /topic/game/board/moved is triggered with player and position information",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/board/moved": {
+                    "/topic/game/{gameId}/player/moved": {
                         "description": "When the player has moved",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
@@ -217,7 +301,7 @@
         "/topic/game/action": {
             "post": {
                 "summary": "execute an action (change position, update life, change states, move image)",
-                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/board/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/action/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/player/died</li><li>/topic/game/player/revived</li><li>/topic/game/player/hit</li><li>/topic/game/player/healed.</li></ul></li></ul>",
+                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/action/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "change position",
@@ -266,43 +350,43 @@
                     }
                 ],
                 "responses": {
-                    "/topic/game/board/moved": {
+                    "/topic/game/{gameId}/player/moved": {
                         "description": "When the ChangePosition action has moved at least one player",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/player/states": {
+                    "/topic/game/{gameId}/player/states": {
                         "description": "When the ChangeStates action has updated at least one state on one player",
                         "schema": {
                             "$ref": "#/definitions/PlayerStateUpdate"
                         }
                     },
-                    "/topic/game/action/image/moved": {
+                    "/topic/game/{gameId}/action/image/moved": {
                         "description": "When the MoveImage action has moved an image on the board",
                         "schema": {
                             "$ref": "#/definitions/MoveImage"
                         }
                     },
-                    "/topic/game/player/died": {
+                    "/topic/game/{gameId}/player/died": {
                         "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and his life is now under 0",
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     },
-                    "/topic/game/player/revived": {
+                    "/topic/game/{gameId}/player/revived": {
                         "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and his life was 0 and now its life is over 0",
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     },
-                    "/topic/game/player/hit": {
+                    "/topic/game/{gameId}/player/hit": {
                         "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and amount was negative",
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     },
-                    "/topic/game/player/healed": {
+                    "/topic/game/{gameId}/player/healed": {
                         "description": "When UpdateCurrentLife or UpdateMaxLife has changed life of at least one player and amount was positive",
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
@@ -311,10 +395,19 @@
                 }
             }
         },
-        "/topic/game/joined": {
+        "/topic/game/{gameId}/joined": {
             "get": {
                 "summary": "Notify when a player has joined the game",
                 "description": "Notify when a player has joined the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that has joined the game and the whole game information (all players and board)",
@@ -325,10 +418,19 @@
                 }
             }
         },
-        "/topic/game/leaved": {
+        "/topic/game/{gameId}/leaved": {
             "get": {
                 "summary": "Notify when a player has joined the game",
                 "description": "Notify when a player has joined the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that has joined the game and the whole game information (all players and board)",
@@ -339,10 +441,19 @@
                 }
             }
         },
-        "/topic/game/action/image/moved": {
+        "/topic/game/{gameId}/action/image/moved": {
             "get": {
                 "summary": "Notify when an image has moved",
                 "description": "Notify when an image has moved",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The executed action. It contains the information about the image that has moved and where the image was before the move (start) and where the image is now (end)",
@@ -353,10 +464,19 @@
                 }
             }
         },
-        "/topic/game/board/moved": {
+        "/topic/game/{gameId}/player/moved": {
             "get": {
                 "summary": "Notify when a player has moved",
                 "description": "Notify when a player has moved",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that moved, the position before the move (oldCell) and the current position (newCell)",
@@ -367,10 +487,19 @@
                 }
             }
         },
-        "/topic/game/board/added": {
+        "/topic/game/{gameId}/player/added": {
             "get": {
                 "summary": "Notify when a player is added to the board",
                 "description": "Notify when a player is added to the board",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that has joined the game and the position where he has been added (newCell)",
@@ -381,10 +510,19 @@
                 }
             }
         },
-        "/topic/game/board/removed": {
+        "/topic/game/{gameId}/player/removed": {
             "get": {
                 "summary": "Notify when a player is removed from board",
                 "description": "Notify when a player is removed from board",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "default": {
                         "description": "The player that has quitted the game and the position where he was (oldCell)",
@@ -748,16 +886,20 @@
         },
         "Game": {
             "properties": {
+            	"id": {
+            		"type": "string",
+            		"description": "The identifier of the game"
+            	},
                 "players": {
                 	"type": "array",
                 	"items": {
 	                    "$ref": "#/definitions/Player",
-	                    "description": "The player"
+	                    "description": "The list of players in the game"
 	                }
                 },
                 "board": {
                     "$ref": "#/definitions/Board",
-                    "description": "The board information"
+                    "description": "The board information (player positions)"
                 }
             },
             "type": "object",
