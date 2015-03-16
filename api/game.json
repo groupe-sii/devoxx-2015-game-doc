@@ -19,7 +19,7 @@
                 "parameters": [],
                 "responses": {
                     "/user/topic/game/created": {
-                        "description": "[Single] When the game has been successfully created",
+                        "description": "Notify the user that made the request that the game has been successfully created",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -30,8 +30,8 @@
         },
         "/user/topic/game/created": {
             "get": {
-                "summary": "Notify the creation of a game",
-                "description": "[Single] Notify the creation of a game",
+                "summary": "Notify the user about the creation of a game",
+                "description": "Notify the user that made the request that the game is created",
                 "parameters": [
                 ],
                 "responses": {
@@ -48,11 +48,11 @@
         "/topic/game/select": {
             "post": {
                 "summary": "Automatically selects a game",
-                "description": "Automatically selects a game. If the game doesn't exist, a game will be automatically created.",
+                "description": "Automatically selects a game. If the game doesn't exist or all games are full, then a game will be automatically created.",
                 "parameters": [],
                 "responses": {
                     "/user/topic/game/selected": {
-                        "description": "The selected game",
+                        "description": "Notify the user that made the request that a game has been selected",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -63,13 +63,13 @@
         },
         "/user/topic/game/selected": {
             "get": {
-                "summary": "Notify when the game is selected",
-                "description": "[Single] Fired when the game is selected",
+                "summary": "Notify the user when the game is selected",
+                "description": "Notify the user that made the request that a game has been selected",
                 "parameters": [
                 ],
                 "responses": {
                     "default": {
-                        "description": "The selected game",
+                        "description": "Notify the user that made the request that a game has been selected",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -85,7 +85,7 @@
                 "parameters": [],
                 "responses": {
                     "/user/topic/game/{gameId}/info": {
-                        "description": "The information about the game",
+                        "description": "Notify the user that made the request with the information about the game",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -96,8 +96,8 @@
         },
         "/user/topic/game/{gameId}/info": {
             "get": {
-                "summary": "Get the information about the game",
-                "description": "[Single] Fired when information about the game is asked",
+                "summary": "Receive game information",
+                "description": "Notify the user that made the request with the information about the game",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -153,8 +153,14 @@
                             "$ref": "#/definitions/Player"
                         }
                     },
+                    "/user/topic/game/{gameId}/joined": {
+                        "description": "Notify the user that made the request that the player has joined the game",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
                     "/user/queue/errors": {
-                        "description": "If the game is full (too many players) or if the player has joined the game",
+                        "description": "Notify the user that made the request that if the game is full (too many players) or if the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/Error"
                         }
@@ -186,7 +192,7 @@
                     "/topic/game/{gameId}/player/left": {
                         "description": "When the player was on the board and has successfully left",
                         "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
+                            "$ref": "#/definitions/Player"
                         }
                     }
                 },
@@ -208,19 +214,19 @@
                 ],
                 "responses": {
                     "default": {
-                        "description": "The player that has joined the game and the whole game information (all players and board)",
+                        "description": "The player that has joined the game",
                         "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
+                            "$ref": "#/definitions/Player"
                         }
                     }
                 },
             	"tags": ["public"]
             }
         },
-        "/topic/game/{gameId}/player/left": {
+        "/user/topic/game/{gameId}/joined": {
             "get": {
-                "summary": "Notify when a player has joined the game",
-                "description": "Notify when a player has joined the game",
+                "summary": "Notify the user that joined the game",
+                "description": "Notify the user that made the request that he joined the game",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -234,11 +240,59 @@
                     "default": {
                         "description": "The player that has joined the game and the whole game information (all players and board)",
                         "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
+                            "$ref": "#/definitions/Player"
+                        }
+                    }
+                },
+            	"tags": ["private"]
+            }
+        },
+        "/topic/game/{gameId}/player/left": {
+            "get": {
+                "summary": "Notify when a player has left the game",
+                "description": "Notify when a player has left the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The player that has left the game",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
                         }
                     }
                 },
             	"tags": ["public"]
+            }
+        },
+       "/user/topic/game/{gameId}/left": {
+            "get": {
+                "summary": "Notify the user that left the game",
+                "description": "Notify the user that made the request that he left the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The player that has left the game",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/{gameId}/player/died": {
@@ -452,7 +506,7 @@
         "/topic/game/action": {
             "post": {
                 "summary": "execute an action (change position, update life, change states, move image)",
-                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/action/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
+                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/action/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "change position",
@@ -513,7 +567,7 @@
                             "$ref": "#/definitions/PlayerStateUpdate"
                         }
                     },
-                    "/topic/game/{gameId}/action/image/moved": {
+                    "/topic/game/{gameId}/action/moved": {
                         "description": "When the MoveImage action has moved an image on the board",
                         "schema": {
                             "$ref": "#/definitions/MoveImage"
@@ -547,7 +601,7 @@
             	"tags": ["public"]
             }
         },
-        "/topic/game/{gameId}/action/image/moved": {
+        "/topic/game/{gameId}/action/moved": {
             "get": {
                 "summary": "Notify when an image has moved",
                 "description": "Notify when an image has moved",
