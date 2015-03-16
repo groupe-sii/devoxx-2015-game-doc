@@ -506,7 +506,7 @@
         "/topic/game/action": {
             "post": {
                 "summary": "execute an action (change position, update life, change states, move image)",
-                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/action/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
+                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "change position",
@@ -567,7 +567,7 @@
                             "$ref": "#/definitions/PlayerStateUpdate"
                         }
                     },
-                    "/topic/game/{gameId}/action/moved": {
+                    "/topic/game/{gameId}/image/moved": {
                         "description": "When the MoveImage action has moved an image on the board",
                         "schema": {
                             "$ref": "#/definitions/MoveImage"
@@ -601,7 +601,7 @@
             	"tags": ["public"]
             }
         },
-        "/topic/game/{gameId}/action/moved": {
+        "/topic/game/{gameId}/image/moved": {
             "get": {
                 "summary": "Notify when an image has moved",
                 "description": "Notify when an image has moved",
