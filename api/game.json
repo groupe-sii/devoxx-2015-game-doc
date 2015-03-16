@@ -18,7 +18,7 @@
                 "description": "Create a new game",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/created": {
+                    "/user/topic/game/created": {
                         "description": "[Single] When the game has been successfully created",
                         "schema": {
                             "$ref": "#/definitions/Game"
@@ -28,7 +28,7 @@
             	"tags": ["private"]
             }
         },
-        "/topic/game/created": {
+        "/user/topic/game/created": {
             "get": {
                 "summary": "Notify the creation of a game",
                 "description": "[Single] Notify the creation of a game",
@@ -51,7 +51,7 @@
                 "description": "Automatically selects a game. If the game doesn't exist, a game will be automatically created.",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/selected": {
+                    "/user/topic/game/selected": {
                         "description": "The selected game",
                         "schema": {
                             "$ref": "#/definitions/Game"
@@ -61,7 +61,7 @@
             	"tags": ["private"]
             }
         },
-        "/topic/game/selected": {
+        "/user/topic/game/selected": {
             "get": {
                 "summary": "Notify when the game is selected",
                 "description": "[Single] Fired when the game is selected",
@@ -84,7 +84,7 @@
                 "description": "Get information about a game",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/{gameId}/info": {
+                    "/user/topic/game/{gameId}/info": {
                         "description": "The information about the game",
                         "schema": {
                             "$ref": "#/definitions/Game"
@@ -92,7 +92,9 @@
                     }
                 },
             	"tags": ["public"]
-            },
+            }
+        },
+        "/user/topic/game/{gameId}/info": {
             "get": {
                 "summary": "Get the information about the game",
                 "description": "[Single] Fired when information about the game is asked",
@@ -119,7 +121,7 @@
         "/topic/game/{gameId}/join": {
             "post": {
                 "summary": "Add a player to the game",
-                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/player/joined is triggered with player, game and board information</li></ul>",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /user/queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /user/queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/player/joined is triggered with player, game and board information</li></ul>",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -151,7 +153,7 @@
                             "$ref": "#/definitions/Player"
                         }
                     },
-                    "/queue/errors": {
+                    "/user/queue/errors": {
                         "description": "If the game is full (too many players) or if the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/Error"
@@ -671,7 +673,7 @@
             	"tags": ["private"]
             }
         },
-        "/queue/errors": {
+        "/user/queue/errors": {
             "get": {
                 "summary": "Notify when an error occurs due to the previous request you have done",
                 "description": "Notify when an error occurs due to the previous request you have done",
