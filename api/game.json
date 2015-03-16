@@ -27,6 +27,22 @@
                 }
             }
         },
+        "/topic/game/created": {
+            "get": {
+                "summary": "Notify the creation of a game",
+                "description": "[Single] Notify the creation of a game",
+                "parameters": [
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The created game",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            }
+        },
         "/topic/game/select": {
             "post": {
                 "summary": "Automatically selects a game",
@@ -42,14 +58,51 @@
                 }
             }
         },
-        "/topic/game/info": {
+        "/topic/game/selected": {
+            "get": {
+                "summary": "Notify when the game is selected",
+                "description": "[Single] Fired when the game is selected",
+                "parameters": [
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The selected game",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/{gameId}/info": {
             "post": {
                 "summary": "Get information about a game",
                 "description": "Get information about a game",
                 "parameters": [],
                 "responses": {
-                    "/topic/game/info": {
+                    "/topic/game/{gameId}/info": {
                         "description": "The information about the game",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Get the information about the game",
+                "description": "[Single] Fired when information about the game is asked",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The game information",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -104,7 +157,7 @@
         "/topic/game/{gameId}/leave": {
             "post": {
                 "summary": "Remove the current player from the game",
-                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/{gameId}/player/removed and /topic/game/{gameId}/leaved are triggered. If the player wasn't really in the game, then no event will be triggered",
+                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/{gameId}/player/removed and /topic/game/{gameId}/left are triggered. If the player wasn't really in the game, then no event will be triggered",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -116,13 +169,13 @@
                 ],
                 "responses": {
                     "/topic/game/{gameId}/player/removed": {
-                        "description": "When the player was on the board and has successfully leaved",
+                        "description": "When the player was on the board and has successfully left",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/{gameId}/leaved": {
-                        "description": "When the player was on the board and has successfully leaved",
+                    "/topic/game/{gameId}/left": {
+                        "description": "When the player was on the board and has successfully left",
                         "schema": {
                             "$ref": "#/definitions/PlayerAndGame"
                         }
@@ -448,7 +501,7 @@
                 }
             }
         },
-        "/topic/game/{gameId}/leaved": {
+        "/topic/game/{gameId}/left": {
             "get": {
                 "summary": "Notify when a player has joined the game",
                 "description": "Notify when a player has joined the game",
