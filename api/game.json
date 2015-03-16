@@ -19,7 +19,37 @@
                 "parameters": [],
                 "responses": {
                     "/topic/game/created": {
-                        "description": "When the game has been successfully created",
+                        "description": "[Single] When the game has been successfully created",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/select": {
+            "post": {
+                "summary": "Automatically selects a game",
+                "description": "Automatically selects a game. If the game doesn't exist, a game will be automatically created.",
+                "parameters": [],
+                "responses": {
+                    "/topic/game/selected": {
+                        "description": "The selected game",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/game/info": {
+            "post": {
+                "summary": "Get information about a game",
+                "description": "Get information about a game",
+                "parameters": [],
+                "responses": {
+                    "/topic/game/info": {
+                        "description": "The information about the game",
                         "schema": {
                             "$ref": "#/definitions/Game"
                         }
@@ -59,7 +89,7 @@
                     "/topic/game/{gameId}/joined": {
                         "description": "When the player has joined the game",
                         "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
+                            "$ref": "#/definitions/Player"
                         }
                     },
                     "/queue/errors": {
