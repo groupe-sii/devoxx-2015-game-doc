@@ -564,7 +564,7 @@
         "/queue/errors": {
             "get": {
                 "summary": "Notify when an error occurs due to the previous request you have done",
-                "dsecription": "Notify when an error occurs due to the previous request you have done",
+                "description": "Notify when an error occurs due to the previous request you have done",
                 "responses": {
                     "default": {
                         "description": "The error (message, cause and eventually the developer)",
