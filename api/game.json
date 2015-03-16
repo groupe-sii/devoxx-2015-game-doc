@@ -24,7 +24,8 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/created": {
@@ -40,7 +41,8 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/select": {
@@ -55,7 +57,8 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/selected": {
@@ -71,7 +74,8 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/{gameId}/info": {
@@ -86,7 +90,8 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             },
             "get": {
                 "summary": "Get the information about the game",
@@ -107,13 +112,14 @@
                             "$ref": "#/definitions/Game"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/join": {
             "post": {
                 "summary": "Add a player to the game",
-                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/joined is triggered with player, game and board information</li></ul>",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/player/joined is triggered with player, game and board information</li></ul>",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -139,7 +145,7 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/{gameId}/joined": {
+                    "/topic/game/{gameId}/player/joined": {
                         "description": "When the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/Player"
@@ -151,13 +157,14 @@
                             "$ref": "#/definitions/Error"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/{gameId}/leave": {
             "post": {
                 "summary": "Remove the current player from the game",
-                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/{gameId}/player/removed and /topic/game/{gameId}/left are triggered. If the player wasn't really in the game, then no event will be triggered",
+                "description": "Remove the current player from the game. Once the player is removed, the events /topic/game/{gameId}/player/removed and /topic/game/{gameId}/player/left are triggered. If the player wasn't really in the game, then no event will be triggered",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -174,13 +181,62 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
-                    "/topic/game/{gameId}/left": {
+                    "/topic/game/{gameId}/player/left": {
                         "description": "When the player was on the board and has successfully left",
                         "schema": {
                             "$ref": "#/definitions/PlayerAndGame"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
+            }
+        },
+        "/topic/game/{gameId}/player/joined": {
+            "get": {
+                "summary": "Notify when a player has joined the game",
+                "description": "Notify when a player has joined the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The player that has joined the game and the whole game information (all players and board)",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
+                        }
+                    }
+                },
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/{gameId}/player/left": {
+            "get": {
+                "summary": "Notify when a player has joined the game",
+                "description": "Notify when a player has joined the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The player that has joined the game and the whole game information (all players and board)",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerAndGame"
+                        }
+                    }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/died": {
@@ -203,7 +259,8 @@
                             "$ref": "#/definitions/Player"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/revived": {
@@ -226,7 +283,8 @@
                             "$ref": "#/definitions/Player"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/hit": {
@@ -249,7 +307,8 @@
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/healed": {
@@ -272,7 +331,8 @@
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/states": {
@@ -295,7 +355,8 @@
                             "$ref": "#/definitions/PlayerStateUpdate"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/max": {
@@ -318,7 +379,8 @@
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/player/move/up": {
@@ -333,7 +395,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/player/move/down": {
@@ -348,7 +411,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/player/move/left": {
@@ -363,7 +427,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/player/move/right": {
@@ -378,7 +443,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/action": {
@@ -475,53 +541,8 @@
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     }
-                }
-            }
-        },
-        "/topic/game/{gameId}/joined": {
-            "get": {
-                "summary": "Notify when a player has joined the game",
-                "description": "Notify when a player has joined the game",
-                "parameters": [
-                    {
-                        "name": "gameId",
-                        "in": "path",
-                        "description": "The identifier of the game",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "The player that has joined the game and the whole game information (all players and board)",
-                        "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
-                        }
-                    }
-                }
-            }
-        },
-        "/topic/game/{gameId}/left": {
-            "get": {
-                "summary": "Notify when a player has joined the game",
-                "description": "Notify when a player has joined the game",
-                "parameters": [
-                    {
-                        "name": "gameId",
-                        "in": "path",
-                        "description": "The identifier of the game",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "The player that has joined the game and the whole game information (all players and board)",
-                        "schema": {
-                            "$ref": "#/definitions/PlayerAndGame"
-                        }
-                    }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/action/image/moved": {
@@ -544,7 +565,8 @@
                             "$ref": "#/definitions/MoveImage"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/moved": {
@@ -567,7 +589,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/added": {
@@ -590,7 +613,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/{gameId}/player/removed": {
@@ -613,7 +637,8 @@
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     }
-                }
+                },
+            	"tags": ["public"]
             }
         },
         "/topic/game/message/error": {
@@ -627,7 +652,8 @@
                             "$ref": "#/definitions/Error"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/topic/game/message": {
@@ -641,7 +667,8 @@
                             "$ref": "#/definitions/Message"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         },
         "/queue/errors": {
@@ -655,7 +682,8 @@
                             "$ref": "#/definitions/Error"
                         }
                     }
-                }
+                },
+            	"tags": ["private"]
             }
         }
     },
