@@ -506,7 +506,7 @@
         "/topic/game/action": {
             "post": {
                 "summary": "execute an action (change position, update life, change states, move image)",
-                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, MoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/image/moved indicating the image that moved and the position before and after.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
+                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is AddImage, then the event /topic/game/{gameId}/image/add indicating that an image has been added on the board with its position.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/image/moved indicating the image that moved and the position before and after.</li><li>If the action is RemoveImage, then the event /topic/game/{gameId}/image/removed indicating an image has been removed from the board with its position before being removed.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "change position",
@@ -527,15 +527,6 @@
                         }
                     },
                     {
-                        "name": "move image",
-                        "in": "body",
-                        "description": "Move an image on the board",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/MoveImage"
-                        }
-                    },
-                    {
                         "name": "update life",
                         "in": "body",
                         "description": "Update the current life of all players that are currently on the target cell",
@@ -552,6 +543,33 @@
                         "schema": {
                             "$ref": "#/definitions/UpdateMaxLife"
                         }
+                    },
+                    {
+                        "name": "add an image",
+                        "in": "body",
+                        "description": "Add an image on the board",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AddImage"
+                        }
+                    },
+                    {
+                        "name": "move an image",
+                        "in": "body",
+                        "description": "Move an image on the board",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveImage"
+                        }
+                    },
+                    {
+                        "name": "remove an image",
+                        "in": "body",
+                        "description": "Remove an image from the board",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RemoveImage"
+                        }
                     }
                 ],
                 "responses": {
@@ -565,12 +583,6 @@
                         "description": "When the ChangeStates action has updated at least one state on one player",
                         "schema": {
                             "$ref": "#/definitions/PlayerStateUpdate"
-                        }
-                    },
-                    "/topic/game/{gameId}/image/moved": {
-                        "description": "When the MoveImage action has moved an image on the board",
-                        "schema": {
-                            "$ref": "#/definitions/MoveImage"
                         }
                     },
                     "/topic/game/{gameId}/player/died": {
@@ -596,6 +608,48 @@
                         "schema": {
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
+                    },
+                    "/topic/game/{gameId}/image/added": {
+                        "description": "When the AddImage action has added an image on the board",
+                        "schema": {
+                            "$ref": "#/definitions/AddImage"
+                        }
+                    },
+                    "/topic/game/{gameId}/image/moved": {
+                        "description": "When the MoveImage action has moved an image on the board",
+                        "schema": {
+                            "$ref": "#/definitions/MoveImage"
+                        }
+                    },
+                    "/topic/game/{gameId}/image/removed": {
+                        "description": "When the RemoveImage action has removed an image from the board",
+                        "schema": {
+                            "$ref": "#/definitions/RemoveImage"
+                        }
+                    }
+                },
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/{gameId}/image/added": {
+            "get": {
+                "summary": "Notify when an image has been added",
+                "description": "Notify when an image has been added on the board",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The executed action. It contains the information about the image that has been added and where the image is placed on the board",
+                        "schema": {
+                            "$ref": "#/definitions/AddImage"
+                        }
                     }
                 },
             	"tags": ["public"]
@@ -619,6 +673,30 @@
                         "description": "The executed action. It contains the information about the image that has moved and where the image was before the move (start) and where the image is now (end)",
                         "schema": {
                             "$ref": "#/definitions/MoveImage"
+                        }
+                    }
+                },
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/{gameId}/image/removed": {
+            "get": {
+                "summary": "Notify when an image has been removed",
+                "description": "Notify when an image has been removed from the board",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The executed action. It contains the information about the image that has been removed and where the image was before being removed",
+                        "schema": {
+                            "$ref": "#/definitions/RemoveImage"
                         }
                     }
                 },
@@ -758,6 +836,48 @@
             "type": "object",
             "description": "A square on the board"
         },
+        "Image": {
+            "description": "Represents an image usable by the game. Can be either ClientImage (image that is stored in the client) or ServerImage (image that is stored on the server)",
+            "type": "object",
+            "properties": {
+                "@c": {
+                    "type": "string",
+                    "description": "The type of the image: either '.ClientImage' or '.ServerImage'"
+                }
+            }
+        },
+        "ClientImage": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .ClientImage"
+            	},
+                "name": {
+                    "type": "string",
+                    "description": "The name of the image without the extension. The image must be stored on the client side. The image is relative to the provided folder or default folder"
+                },
+                "folder": {
+                    "type": "string",
+                    "description": "The folder that contains the image. The folder must exists on the client side"
+                }
+            },
+            "type": "object",
+            "description": "References an image that is stored on the client side"
+        },
+        "ServerImage": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .ServerImage"
+            	},
+                "content": {
+                    "type": "string",
+                    "description": "The content of the image (base64 encoded)"
+                }
+            },
+            "type": "object",
+            "description": "References an image that is stored on the server side"
+        },
         "Life": {
             "properties": {
                 "current": {
@@ -776,8 +896,8 @@
                     "description": "Unique name of the player"
                 },
                 "avatar": {
-                    "type": "string",
-                    "description": "The name of a local image that will be displayed in the game for the player. Default value to 'default'"
+                    "$ref": "#/definitions/Image",
+                    "description": "The image that will be displayed in the game for the player"
                 }
             },
             "type": "object"
@@ -881,15 +1001,33 @@
             "type": "object",
             "description": "Player state changes response"
         },
+        "AddImage": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .AddImage"
+            	},
+                "image": {
+                    "$ref": "#/definitions/Image",
+                    "description": "Image to add"
+                },
+                "cell": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The cell where to place the image"
+                }
+            },
+            "type": "object",
+            "description": "An image adding action"
+        },
         "MoveImage": {
             "properties": {
             	"@c": {
             		"type": "string",
             		"description": "MUST be .MoveImage"
             	},
-                "name": {
-                    "type": "string",
-                    "description": "Image name to move. The name of the image represents the name of the local file to move."
+                "image": {
+                    "$ref": "#/definitions/Image",
+                    "description": "Image to move"
                 },
                 "start": {
                     "$ref": "#/definitions/Cell",
@@ -903,13 +1041,31 @@
             "type": "object",
             "description": "An image moving action"
         },
+        "RemoveImage": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .RemoveImage"
+            	},
+                "image": {
+                    "$ref": "#/definitions/Image",
+                    "description": "Image to remove"
+                },
+                "cell": {
+                    "$ref": "#/definitions/Cell",
+                    "description": "The cell where the image before being removed"
+                }
+            },
+            "type": "object",
+            "description": "An image removing action"
+        },
         "Action": {
-            "description": "any of ChangePosition, MoveImage, UpdateCurrentLife, UpdateMaxLife, ChangeStates",
+            "description": "any of ChangePosition, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife, ChangeStates",
             "type": "object",
             "properties": {
                 "@c": {
                     "type": "string",
-                    "description": "The type of the action: either '.ChangePosition', '.MoveImage', '.UpdateCurrentLife', '.UpdateMaxLife', '.ChangeStates'"
+                    "description": "The type of the action: either '.ChangePosition', '.AddImage', '.MoveImage', '.RemoveImage', '.UpdateCurrentLife', '.UpdateMaxLife', '.ChangeStates'"
                 }
             }
         },
