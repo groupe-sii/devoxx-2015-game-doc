@@ -121,7 +121,7 @@
         "/topic/game/{gameId}/join": {
             "post": {
                 "summary": "Add a player to the game",
-                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /user/queue/errors.</li><li>If the game is full (too many players), then an error is also triggered on /user/queue/errors.</li><li>If the player has joined the game, then the event /topic/game/{gameId}/player/added is triggered with player and position information. The /topic/game/{gameId}/player/joined is triggered with player, game and board information</li></ul>",
+                "description": "Add a player to the game.<ul><li>If the player is already in the game, then an error is triggered on /user/topic/game/errors.</li><li>If the game is full (too many players), then an error is also triggered on /user/topic/game/errors.</li><li>If the player has joined the game, then <ul><li>The event /topic/game/{gameId}/player/added is triggered with player and position information.</li><li>The /topic/game/{gameId}/player/joined is triggered with player, game and board information.</li><li>The event /user/topic/game/joined is triggered to the user that made the request to indicate that his request has been successfully taken into account</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -159,7 +159,7 @@
                             "$ref": "#/definitions/Player"
                         }
                     },
-                    "/user/queue/errors": {
+                    "/user/topic/game/errors": {
                         "description": "Notify the user that made the request that if the game is full (too many players) or if the player has joined the game",
                         "schema": {
                             "$ref": "#/definitions/Error"
@@ -295,6 +295,54 @@
             	"tags": ["private"]
             }
         },
+        "/topic/game/{gameId}/started": {
+            "get": {
+                "summary": "Notify when the game has started",
+                "description": "Fired just after one player has joined the game",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The game that started",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                },
+            	"tags": ["private"]
+            }
+        },
+        "/topic/game/{gameId}/stopped": {
+            "get": {
+                "summary": "Notify when the game has stopped",
+                "description": "Fired just after the last player on the game has left it",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The game that stopped",
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                },
+            	"tags": ["private"]
+            }
+        },
         "/topic/game/{gameId}/player/died": {
             "get": {
                 "summary": "Notify the death of a player",
@@ -415,7 +463,7 @@
             	"tags": ["public"]
             }
         },
-        "/topic/game/{gameId}/player/max": {
+        "/topic/game/{gameId}/player/life/max": {
             "get": {
                 "summary": "Notify the player his max life is updated",
                 "description": "Notify the player his max life is updated",
@@ -506,7 +554,7 @@
         "/topic/game/action": {
             "post": {
                 "summary": "execute an action (change position, update life, change states, move image)",
-                "description": "<p>Execute an action. Please see specific actions to send: ChangePosition, ChangeStates, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife.</p><ul><li>If the action is ChangePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is ChangeStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is AddImage, then the event /topic/game/{gameId}/image/add indicating that an image has been added on the board with its position.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/image/moved indicating the image that moved and the position before and after.</li><li>If the action is RemoveImage, then the event /topic/game/{gameId}/image/removed indicating an image has been removed from the board with its position before being removed.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li></ul></li></ul>",
+                "description": "<p>Execute an action. Please see specific actions to send: UpdatePosition, UpdateStates, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife, StartAnimation, StopAnimation.</p><ul><li>If the action is UpdatePosition, then the event /topic/game/{gameId}/player/moved is triggered with player and position information.</li><li>If the action is UpdateStates, then the event /topic/game/{gameId}/player/states is triggered with player and the list of changes.</li><li>If the action is AddImage, then the event /topic/game/{gameId}/image/add indicating that an image has been added on the board with its position.</li><li>If the action is MoveImage, then the event /topic/game/{gameId}/image/moved indicating the image that moved and the position before and after.</li><li>If the action is RemoveImage, then the event /topic/game/{gameId}/image/removed indicating an image has been removed from the board with its position before being removed.</li><li>If the action is StartAnimation, then the event /topic/game/{gameId}/animation/started indicating that an animation should start.</li><li>If the action is StopAnimation, then the event /topic/game/{gameId}/animation/stop indicating that an image should stop.</li><li>If the action is UpdateCurrentLife or UpdateMaxLife, then one of the following events is triggered according to the life change: <ul><li>/topic/game/{gameId}/player/died</li><li>/topic/game/{gameId}/player/revived</li><li>/topic/game/{gameId}/player/hit</li><li>/topic/game/{gameId}/player/healed.</li><li>/topic/game/{gameId}/player/life/max.</li></ul></li></ul>",
                 "parameters": [
                     {
                         "name": "change position",
@@ -514,7 +562,7 @@
                         "description": "Change position of all players that are currently on the provided cell to another cell",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ChangePosition"
+                            "$ref": "#/definitions/UpdatePosition"
                         }
                     },
                     {
@@ -523,7 +571,7 @@
                         "description": "Change states of all players that are currently on the target cell",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ChangeStates"
+                            "$ref": "#/definitions/UpdateStates"
                         }
                     },
                     {
@@ -570,17 +618,35 @@
                         "schema": {
                             "$ref": "#/definitions/RemoveImage"
                         }
+                    },
+                    {
+                        "name": "start an animation",
+                        "in": "body",
+                        "description": "Start an animation that is previously defined on the client",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/StartAnimation"
+                        }
+                    },
+                    {
+                        "name": "stop an animation",
+                        "in": "body",
+                        "description": "Stop an animation",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/StopAnimation"
+                        }
                     }
                 ],
                 "responses": {
                     "/topic/game/{gameId}/player/moved": {
-                        "description": "When the ChangePosition action has moved at least one player",
+                        "description": "When the UpdatePosition action has moved at least one player",
                         "schema": {
                             "$ref": "#/definitions/PlayerMoved"
                         }
                     },
                     "/topic/game/{gameId}/player/states": {
-                        "description": "When the ChangeStates action has updated at least one state on one player",
+                        "description": "When the UpdateStates action has updated at least one state on one player",
                         "schema": {
                             "$ref": "#/definitions/PlayerStateUpdate"
                         }
@@ -609,6 +675,12 @@
                             "$ref": "#/definitions/PlayerLifeUpdate"
                         }
                     },
+                    "/topic/game/{gameId}/player/life/max": {
+                        "description": "When UpdateMaxLife has changed the maximum points of life of at least one player",
+                        "schema": {
+                            "$ref": "#/definitions/PlayerLifeUpdate"
+                        }
+                    },
                     "/topic/game/{gameId}/image/added": {
                         "description": "When the AddImage action has added an image on the board",
                         "schema": {
@@ -625,6 +697,18 @@
                         "description": "When the RemoveImage action has removed an image from the board",
                         "schema": {
                             "$ref": "#/definitions/RemoveImage"
+                        }
+                    },
+                    "/topic/game/{gameId}/animation/started": {
+                        "description": "When the StartAnimation has been executed",
+                        "schema": {
+                            "$ref": "#/definitions/StartAnimation"
+                        }
+                    },
+                    "/topic/game/{gameId}/animation/stopped": {
+                        "description": "When the StopAnimation has been executed",
+                        "schema": {
+                            "$ref": "#/definitions/StopAnimation"
                         }
                     }
                 },
@@ -798,14 +882,14 @@
                     "default": {
                         "description": "The message and the level",
                         "schema": {
-                            "$ref": "#/definitions/Message"
+                            "$ref": "#/definitions/GameMessage"
                         }
                     }
                 },
             	"tags": ["private"]
             }
         },
-        "/user/queue/errors": {
+        "/user/topic/game/errors": {
             "get": {
                 "summary": "Notify when an error occurs due to the previous request you have done",
                 "description": "Notify when an error occurs due to the previous request you have done",
@@ -817,7 +901,75 @@
                         }
                     }
                 },
-            	"tags": ["private"]
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/animation/all": {
+            "post": {
+                "summary": "Get the list of server animations",
+                "description": "Retrieve the whole list of available animation descriptions handled by the server (the animation handled by the client are not visible here). The name of the animation may be used directly in css classes or used to be manually triggered by sending an action of type StartAnimation.",
+                "parameters": [
+                ],
+                "responses": {
+                    "/user/topic/game/animation/all": {
+                        "description": "Provide the animation list",
+                        "schema": {
+                        	"type": "array",
+                        	"items": {
+                            	"$ref": "#/definitions/Animation"
+                            }
+                        }
+                    }
+                },
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/{gameId}/animation/started": {
+            "get": {
+                "summary": "Notify when an animation has started",
+                "description": "This event is broadcasted in order to indicate to the client implementation that an animation must start",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The information about the animation to start. The name of the animation is used to identify the animation to start. The animation must be previously created. The other parameters allow to override the predefined animation behavior (duration, count, delay...)",
+                        "schema": {
+                            "$ref": "#/definitions/StartAnimation"
+                        }
+                    }
+                },
+            	"tags": ["public"]
+            }
+        },
+        "/topic/game/{gameId}/animation/stopped": {
+            "get": {
+                "summary": "Notify when an animation has stopped",
+                "description": "This event is broadcasted in order to indicate to the client implementation that an animation must stop",
+                "parameters": [
+                    {
+                        "name": "gameId",
+                        "in": "path",
+                        "description": "The identifier of the game",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "The information about the action (just contains the name of the animation to stop)",
+                        "schema": {
+                            "$ref": "#/definitions/StopAnimation"
+                        }
+                    }
+                },
+            	"tags": ["public"]
             }
         }
     },
@@ -837,12 +989,12 @@
             "description": "A square on the board"
         },
         "Image": {
-            "description": "Represents an image usable by the game. Can be either ClientImage (image that is stored in the client) or ServerImage (image that is stored on the server)",
+            "description": "Represents an image usable by the game. Can be either ClientImage (image that is stored in the client), Base64ServerImage (image that is stored on the server and base64 encoded) or UriImage (image that is stored on the server and accessible through an URL). An image can also represents a sprite, see Sprite for more information",
             "type": "object",
             "properties": {
                 "@c": {
                     "type": "string",
-                    "description": "The type of the image: either '.ClientImage' or '.ServerImage'"
+                    "description": "The type of the image: either '.ClientImage', '.Base64ServerImage', '.UriImage' or any of sprite class (see sprite for more information)"
                 }
             }
         },
@@ -852,6 +1004,10 @@
             		"type": "string",
             		"description": "MUST be .ClientImage"
             	},
+                "id": {
+                    "type": "string",
+                    "description": "The unique id of the image"
+                },
                 "name": {
                     "type": "string",
                     "description": "The name of the image without the extension. The image must be stored on the client side. The image is relative to the provided folder or default folder"
@@ -864,19 +1020,121 @@
             "type": "object",
             "description": "References an image that is stored on the client side"
         },
-        "ServerImage": {
+        "Base64ServerImage": {
             "properties": {
             	"@c": {
             		"type": "string",
-            		"description": "MUST be .ServerImage"
+            		"description": "MUST be .Base64ServerImage"
             	},
+                "id": {
+                    "type": "string",
+                    "description": "The unique id of the image"
+                },
+                "mimetype": {
+                    "type": "string",
+                    "description": "The mimetype of the image"
+                },
                 "content": {
                     "type": "string",
                     "description": "The content of the image (base64 encoded)"
                 }
             },
             "type": "object",
-            "description": "References an image that is stored on the server side"
+            "description": "References an image that is stored on the server side. The image is serialized into base64 in order to be usable by the client."
+        },
+        "UriImage": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .UriImage"
+            	},
+                "uri": {
+                    "type": "string",
+                    "description": "The url of the image"
+                }
+            },
+            "type": "object",
+            "description": "References an image that is stored on the server side. The image is accessible through the provided URL."
+        },
+        "Sprite": {
+            "description": "Represents an image that is a composition of many other images",
+            "type": "object",
+            "properties": {
+                "@c": {
+                    "type": "string",
+                    "description": "The type of the image: either '.Base64Sprite' or '.UriSprite'"
+                }
+            }
+        },
+        "UriSprite": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .UriSprite"
+            	},
+                "id": {
+                    "type": "string",
+                    "description": "The unique id of the image"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/ServerImage",
+                    "description": "The server image that is composed of several sub images"
+                },
+                "width": {
+                    "type": "integer",
+                    "description": "The width of the sprite image"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "The height of the sprite image"
+                },
+                "frameWidth": {
+                    "type": "integer",
+                    "description": "The width of one image contained in the sprite"
+                },
+                "frameHeight": {
+                    "type": "integer",
+                    "description": "The height of one image contained in the sprite"
+                }
+            },
+            "type": "object",
+            "description": "References a sprite (combination of several sub images). The sprite image is generated in memory and base64 encoded"
+        },
+        "Base64Sprite": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .Base64Sprite"
+            	},
+                "id": {
+                    "type": "string",
+                    "description": "The unique id of the image"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/ServerImage",
+                    "description": "The server image that is composed of several sub images"
+                },
+                "width": {
+                    "type": "integer",
+                    "description": "The width of the sprite image"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "The height of the sprite image"
+                },
+                "frameWidth": {
+                    "type": "integer",
+                    "description": "The width of one image contained in the sprite"
+                },
+                "frameHeight": {
+                    "type": "integer",
+                    "description": "The height of one image contained in the sprite"
+                }
+            },
+            "type": "object",
+            "description": "References a sprite (combination of several sub images). The sprite image is generated in memory and base64 encoded"
         },
         "Life": {
             "properties": {
@@ -907,7 +1165,7 @@
             "properties": {
                 "@c": {
                     "type": "string",
-                    "description": "The type of the player: either a Wizard or an Enemy"
+                    "description": "The type of the player: either a wizard ('.Wizard') or an enemy ('.Enemy')"
                 },
                 "id": {
                     "type": "string",
@@ -921,15 +1179,25 @@
                     "$ref": "#/definitions/PlayerInfo",
                     "description": "Information about the player (name and avatar)"
                 },
-                "states": {
-                    "type": "string",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "States affecting the player."
+                "playerStates": {
+                    "$ref": "#/definitions/PlayerStates",
+                    "description": "The list of states affecting the player."
                 }
             },
             "type": "object"
+        },
+        "PlayerStates": {
+            "properties": {
+                "states": {
+                    "type": "array",
+                    "items": {
+                    	"type": "string"
+                    },
+                    "description": "The list of states"
+                }
+            },
+            "type": "object",
+            "description": "Represents the states that are applied on a player"
         },
         "PlayerMoved": {
             "properties": {
@@ -1060,20 +1328,20 @@
             "description": "An image removing action"
         },
         "Action": {
-            "description": "any of ChangePosition, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife, ChangeStates",
+            "description": "any of UpdatePosition, AddImage, MoveImage, RemoveImage, UpdateCurrentLife, UpdateMaxLife, UpdateStates",
             "type": "object",
             "properties": {
                 "@c": {
                     "type": "string",
-                    "description": "The type of the action: either '.ChangePosition', '.AddImage', '.MoveImage', '.RemoveImage', '.UpdateCurrentLife', '.UpdateMaxLife', '.ChangeStates'"
+                    "description": "The type of the action: either '.UpdatePosition', '.AddImage', '.MoveImage', '.RemoveImage', '.UpdateCurrentLife', '.UpdateMaxLife', '.UpdateStates'"
                 }
             }
         },
-        "ChangePosition": {
+        "UpdatePosition": {
             "properties": {
             	"@c": {
             		"type": "string",
-            		"description": "MUST be .ChangePosition"
+            		"description": "MUST be .UpdatePosition"
             	},
                 "start": {
                     "$ref": "#/definitions/Cell",
@@ -1087,11 +1355,11 @@
             "type": "object",
             "description": "Change position of all players that are on the targeted cell (start) to another cell (end)"
         },
-        "ChangeStates": {
+        "UpdateStates": {
             "properties": {
             	"@c": {
             		"type": "string",
-            		"description": "MUST be .ChangeStates"
+            		"description": "MUST be .UpdateStates"
             	},
                 "cell": {
                     "$ref": "#/definitions/Cell",
@@ -1144,6 +1412,42 @@
             "type": "object",
             "description": "Change maximum life of all players that are on the targeted cell"
         },
+        "StopAnimation": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .StopAnimation"
+            	},
+                "name": {
+                    "type": "string",
+                    "description": "The name of the animation to stop"
+                }
+            },
+            "type": "object",
+            "description": "Stop an animation identified by the provided name"
+        },
+        "StartAnimation": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .StartAnimation"
+            	},
+                "options": {
+                    "$ref": "#/definitions/AnimationOptions",
+                    "description": "Override the default options of the animation (delay, number of execution, direction...)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the animation to start"
+                },
+                "duration": {
+                    "type": "integer",
+                    "description": "Override the default duration of the animation (value is in milliseconds)"
+                }
+            },
+            "type": "object",
+            "description": "Manually starts an animation previously defined either on the server side or the client side. The animation is identified by the name. The animation parameters can be overrided by this action (just for this execution)"
+        },
         "Level": {
             "description": "one of DEBUG, INFO, WARNING",
             "type": "string",
@@ -1154,7 +1458,7 @@
                 "WARNING"
             ]
         },
-        "Message": {
+        "GameMessage": {
             "properties": {
                 "message": {
                     "type": "string"
@@ -1195,6 +1499,10 @@
         },
         "Board": {
             "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "The unique id of the board"
+                },
                 "width": {
                     "type": "integer",
                     "description": "The width of the board"
@@ -1212,6 +1520,14 @@
             	"id": {
             		"type": "string",
             		"description": "The identifier of the game"
+            	},
+            	"started": {
+            		"type": "boolean",
+            		"description": "Indicates if the game is started or not"
+            	},
+            	"full": {
+            		"type": "boolean",
+            		"description": "Indicates if the game is full or not"
             	},
                 "players": {
                 	"type": "array",
@@ -1241,6 +1557,146 @@
             },
             "type": "object",
             "description": "The player and the game information"
+        },
+        "Animation": {
+            "description": "Describe an animation. This is the interface, see any of following implementations: ClientAnimation, PropertiesAnimation, SpriteAnimation",
+            "type": "object",
+            "properties": {
+                "@c": {
+                    "type": "string",
+                    "description": "The type of the action: either '.ClientAnimation', '.PropertiesAnimation', '.SpriteAnimation'"
+                }
+            }
+        },
+        "ClientAnimation": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .ClientAnimation"
+            	},
+                "options": {
+                    "$ref": "#/definitions/AnimationOptions",
+                    "description": "The animation options (delay, number of execution, direction...)"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "The unique identifier for the animation"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the animation to start"
+                },
+                "duration": {
+                    "type": "integer",
+                    "description": "The duration of the animation (value is in milliseconds)"
+                }
+            },
+            "type": "object",
+            "description": "Animation that is defined on the client side"
+        },
+        "PropertiesAnimation": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .PropertiesAnimation"
+            	},
+                "options": {
+                    "$ref": "#/definitions/AnimationOptions",
+                    "description": "The animation options (delay, number of execution, direction...)"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "The unique identifier for the animation"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the animation to start"
+                },
+                "duration": {
+                    "type": "integer",
+                    "description": "The duration of the animation (value is in milliseconds)"
+                },
+                "frames": {
+                	"type": "array",
+                	"items": {
+                		"$ref": "#/definitions/Frame",
+                		"description": "The list of frames that compose the animation"
+                	}
+                }
+            },
+            "type": "object",
+            "description": "Declare an animation composed with provided frames. These frames are useful for indicating to the client how to run it."
+        },
+        "SpriteAnimation": {
+            "properties": {
+            	"@c": {
+            		"type": "string",
+            		"description": "MUST be .SpriteAnimation"
+            	},
+                "options": {
+                    "$ref": "#/definitions/AnimationOptions",
+                    "description": "The animation options (delay, number of execution, direction...)"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "The unique identifier for the animation"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the animation to start"
+                },
+                "duration": {
+                    "type": "integer",
+                    "description": "The duration of the animation (value is in milliseconds)"
+                },
+                "sprite": {
+            		"$ref": "#/definitions/Sprite",
+            		"description": "The sprite image to animate"
+                }
+            },
+            "type": "object",
+            "description": "Generates an animation based on the provided sprite image. Each frame represents one image of the sprite. The animation can automatically generates linear percentage for frames. But if steps are provided, the animation is no more linear and let you provide manually the steps."
+        },
+        "Frame": {
+            "properties": {
+                "properties": {
+                	"type": "object",
+                	"additionalProperties": {
+                		"type": "object"
+                	},
+                	"desccription": "The map of properties to update"
+                },
+                "percentage": {
+                    "type": "number",
+                    "description": "The unique identifier for the animation"
+                }
+            },
+            "type": "object",
+            "description": "Represents one step of an animation"
+        },
+        "AnimationOptions": {
+            "properties": {
+                "count": {
+                	"type": "integer",
+                	"description": "The number of times that the animation should run: <ul><li>1 means 1 execution (no repeat)</li><li>2 and over means the exact number of execution</li><li>0 means no execution</li><li>-1 means repeat forever (animation never stops)</li></ul>"
+                },
+                "direction": {
+                    "type": "string",
+                    "enum": [
+                    	"NORMAL",
+                    	"REVERSE",
+                    	"ALTERNATE",
+                    	"ALTERNATE_REVERSE"
+                    ],
+                    "description": "The direction of the animation"
+                },
+                "delay": {
+                	"type": "integer",
+                	"description": "The time to wait before starting the animation (in milliseconds)"
+                }
+            },
+            "type": "object",
+            "description": "Represents one step of an animation"
         }
     }
 }
