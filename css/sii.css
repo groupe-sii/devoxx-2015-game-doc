@@ -17,3 +17,20 @@ span.http_method a {
 .operation-params td input {
 	display: none !important;
 }
+
+.swagger-section .swagger-ui-wrap .definitions-container ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options {
+    max-width: 80%;
+    text-align: right;
+}
+
+.swagger-section .swagger-ui-wrap .definitions-container ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 {
+    padding: 5px;
+}
+
+.swagger-section .swagger-ui-wrap .definitions-container ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.get div.content h4 {
+    padding-top: 0;
+}
+
+.swagger-section .swagger-ui-wrap .definitions-container ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation {
+    cursor: pointer;
+}

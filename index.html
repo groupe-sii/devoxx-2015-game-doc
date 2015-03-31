@@ -50,6 +50,7 @@
                     hljs.highlightBlock(e)
                 });
                 sii.adapt();
+                sii.populateDefinitions();
             },
             onFailure: function(data) {
                 log("Unable to Load SwaggerUI");
@@ -100,6 +101,76 @@
     </div>
     <div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
     <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+    <div class="definitions swagger-ui-wrap">
+        <div class="definitions-container container"></div>
+    </div>
 </body>
+<script id="entry-template" type="text/x-handlebars-template">
+    <ul id="resources">
+        <li class="resource">
+            <div class="heading">
+                <h2>
+                    <a href="#!/definitions" class="toggleEndpointList" data-id="definitions">Definitions</a> 
+                </h2>
+                <ul class="options">
+                    <li>
+                        <a href="#!/definitions" id="endpointListTogger_public" class="toggleEndpointList" data-id="definitions">Show/Hide</a>
+                    </li>
+                    <li>
+                        <a href="#" class="collapseResource" data-id="definitions">List Operations</a>
+                    </li>
+                    <li>
+                        <a href="#" class="expandResource" data-id="definitions">Expand Operations</a>
+                    </li>
+                </ul>
+            </div>
+            <ul class="endpoints">
+                {{#each definitions}}
+                <li class="endpoint">
+                    <ul class="operations">
+                        <li class="get operation toggleOperation">
+                            <div class="heading">
+                                <h3>
+                                    <span class="path">
+                                        <a>{{@key}}</a>
+                                    </span>
+                                </h3>
+                                <ul class="options">
+                                    <li>
+                                        {{ this.description }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="content" style="display: none;">
+                                <h4>Properties</h4>
+                                <table class="fullwidth">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 100px; max-width: 100px">Property</th>
+                                            <th style="width: 100px; max-width: 100px;">Type</th>
+                                            <th style="width: 100px; max-width: 100px;">Ref</th>
+                                            <th style="width: auto; max-width: auto">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each this.properties}}
+                                        <tr>
+                                            <td>{{@key}}</td>
+                                            <td>{{ this.type }}</td>
+                                            <td>{{ this.$ref }}</td>
+                                            <td>{{ this.description }}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+    </ul>
+</script>
 
 </html>
