@@ -132,7 +132,7 @@
                             <div class="heading">
                                 <h3>
                                     <span class="path">
-                                        <a>{{@key}}</a>
+                                        <a name="/definitions/{{@key}}">{{@key}}</a>
                                     </span>
                                 </h3>
                                 <ul class="options">
@@ -157,7 +157,7 @@
                                         <tr>
                                             <td>{{@key}}</td>
                                             <td>{{ this.type }}</td>
-                                            <td>{{ this.$ref }}</td>
+                                            <td><a href="{{ this.$ref }}">{{ this.$ref }}</a></td>
                                             <td>{{ this.description }}</td>
                                         </tr>
                                         {{/each}}
